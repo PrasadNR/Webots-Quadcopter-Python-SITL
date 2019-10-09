@@ -1,0 +1,11 @@
+Webots Proto Cache File version 1.4
+protoFileHash: 46af411fc55179b6b9bd8f1581aef07e
+containsDevices: 0
+baseType: PBRAppearance
+slotType: 
+parameters: colorOverride,textureTransform,IBLStrength
+tags: 
+license:  Apache License 2.0
+licenseUrl:  http://www.apache.org/licenses/LICENSE-2.0
+documentationUrl: 
+info: A\ssandy\sground\smaterial.\sThe\scolor\scan\sbe\sselected\susing\sthe\s`colorOverride`\sfield.\sUseful\swith\sthe\sUnevenTerrain\sPROTO.\n

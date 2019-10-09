@@ -1,0 +1,11 @@
+Webots Proto Cache File version 1.4
+protoFileHash: b82fa35c62cd1daec78e1700d90d04a0
+containsDevices: 1
+baseType: Solid
+slotType: 
+parameters: translation,name
+tags: 
+license:  Copyright Cyberbotics Ltd. Licensed for use only with Webots.
+licenseUrl:  https://cyberbotics.com/webots_assets_license
+documentationUrl: 
+info: Physics-based\smodel\sof\sthe\sPioneer\sgripper\s(Adept\sMobile\sRobotics)\n

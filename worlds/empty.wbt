@@ -1,0 +1,35 @@
+#VRML_SIM R2019b utf8
+WorldInfo {
+}
+Viewpoint {
+  orientation -0.05954689928419423 0.9903419273596133 0.12520796180468877 2.1692242739274206
+  position 1.372632015567339 0.5619221203497843 -4.212189715811046
+}
+TexturedBackground {
+}
+TexturedBackgroundLight {
+}
+Pioneer3at {
+  hidden position_0_0 -4.4871747996531555e-13
+  hidden position_0_1 1.0490323898843219e-11
+  hidden position_0_2 -1.0494521534057642e-11
+  hidden position_0_3 4.4455853607921126e-13
+  translation -5.1444484422575286e-05 0.107611069497796 -3.2998556360533344
+  rotation -0.00019720603968113445 0.999999905409869 0.00038767258171790284 2.2000000413131686
+  controller "pioneerController"
+  extensionSlot [
+    Camera {
+      near 0.25
+    }
+    GPS {
+    }
+  ]
+}
+Floor {
+  size 70 42.4
+  tileSize 70 42.4
+  appearance SandyGround {
+    textureTransform TextureTransform {
+    }
+  }
+}
