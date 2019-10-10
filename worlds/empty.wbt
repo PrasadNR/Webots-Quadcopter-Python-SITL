@@ -32,4 +32,11 @@ Floor {
 Mavic2Pro {
   translation 0 0.35 -3.3
   rotation 1 0 0 -1.570796327
+  cameraSlot [
+    Camera {
+      rotation 1 0 0 -1
+      width 400
+      height 240
+    }
+  ]
 }
