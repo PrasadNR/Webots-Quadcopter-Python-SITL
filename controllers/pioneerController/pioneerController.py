@@ -12,20 +12,18 @@ timestep = int(robot.getBasicTimeStep())
 roverHelper.initialiseMotors(robot, MAX_WHEEL_VELOCITY)
 
 gps = GPS("gps")
-gps.enable(TIME_STEP);
+gps.enable(TIME_STEP)
 
 camera = Camera("camera")
-camera.enable(TIME_STEP);
+camera.enable(TIME_STEP)
 
-display = Display("display")
-
-teleoperaton = False #THIS IS ONLY FOR DEBUGGING PURPOSES AND USAGE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
+teleoperaton = True #THIS IS ONLY FOR DEBUGGING PURPOSES AND USAGE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
 
 if teleoperaton == True:
 	keyboard = Keyboard();
 	keyboard.enable(TIME_STEP);
 	cv2.startWindowThread()
-	cv2.namedWindow("preview")
+	cv2.namedWindow("centroid")
 
 while (robot.step(timestep) != -1):
 
@@ -42,10 +40,27 @@ while (robot.step(timestep) != -1):
 		if key == keyboard.END:
 			roverHelper.movement.brake(robot, MAX_WHEEL_VELOCITY)
 
-	gpsLocation = gps.getValues();
-	cameraData = camera.getImage();
-	image = np.frombuffer(cameraData, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4))
+	gpsLocation = gps.getValues()
+	cameraData = camera.getImage()
+	image = np.frombuffer(cameraData, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4)) #BGRA
+	
+	redMask = cv2.inRange(image[int(camera.getHeight()/2):camera.getHeight(), :, 2], 16, 200)
+	greenMask = cv2.inRange(image[int(camera.getHeight()/2):camera.getHeight(), :, 1], 0, 100)
+	blueMask = cv2.inRange(image[int(camera.getHeight()/2):camera.getHeight(), :, 0], 0, 100)
+	momentMask = (redMask / 255) * ((greenMask + blueMask) / (2 * 255))
+	moment = cv2.moments(momentMask, False)
+	
+	try:
+		cX = int(moment["m10"] / moment["m00"])
+		cY = int(moment["m01"] / moment["m00"])
+	except ZeroDivisionError:
+		cX, cY = int(camera.getHeight()/2), int(camera.getWidth()/2)
+
+	k = (2 * cX - camera.getWidth()) / camera.getWidth()
+	roverHelper.lineFollow(robot, MAX_WHEEL_VELOCITY, k)
 
 	if teleoperaton == True:
-		cv2.imshow("preview", image)
+		cXdisplay, cYdisplay = int(cX), int(cY + camera.getHeight()/2)
+		cv2.circle(image, (cXdisplay, cYdisplay), 2, (0,255,0), 3)
+		cv2.imshow("centroid", image)
 		cv2.waitKey(TIME_STEP)
