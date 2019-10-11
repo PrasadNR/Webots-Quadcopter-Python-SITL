@@ -9,6 +9,6 @@ selectionDisabled: 0
 viewpointLocked: 0
 orthographicViewHeight: 1
 textFiles: -1
-renderingDevicePerspectives: Mavic 2 PRO:camera;1;1;0;0
 renderingDevicePerspectives: Pioneer 3-AT:display;1;1;0;0
+renderingDevicePerspectives: Mavic 2 PRO:camera;1;1;0;0
 renderingDevicePerspectives: Pioneer 3-AT:camera;0;1.01563;0;0
