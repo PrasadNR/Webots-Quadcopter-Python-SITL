@@ -4,9 +4,11 @@ import cv2
 import numpy as np
 
 TIME_STEP = 64
-MAX_WHEEL_VELOCITY = 6.4
 
 robot = Robot()
+
+[frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor] = roverHelper.getMotorAll(robot)
+MAX_WHEEL_VELOCITY = frontLeftMotor.getMaxVelocity()
 
 timestep = int(robot.getBasicTimeStep())
 roverHelper.initialiseMotors(robot, MAX_WHEEL_VELOCITY)
