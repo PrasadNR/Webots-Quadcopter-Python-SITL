@@ -28,6 +28,8 @@ compass = Compass("compass")
 compass.enable(TIME_STEP)
 gyro = Gyro("gyro")
 gyro.enable(TIME_STEP)
+camera_roll_motor = robot.getMotor("camera roll")
+camera_pitch_motor = robot.getMotor("camera pitch")
 
 k_vertical_thrust = 68.5;
 k_vertical_offset = 0.6;
@@ -51,3 +53,12 @@ while (robot.step(timestep) != -1):
 	altitude = gps.getValues()[1]
 	roll_acceleration = gyro.getValues()[0]
 	pitch_acceleration = gyro.getValues()[1]
+	camera_roll_motor_position = -0.115 * roll_acceleration
+	camera_pitch_motor_position = -0.1 * pitch_acceleration
+
+	if not(numpy.isnan(camera_roll_motor_position)):
+		camera_roll_motor.setPosition(camera_roll_motor_position)
+	if not(numpy.isnan(camera_pitch_motor_position)):
+		camera_pitch_motor.setPosition(camera_pitch_motor_position)
+
+	
