@@ -39,7 +39,7 @@ keyboard.enable(TIME_STEP);
 k_vertical_thrust = 68.5;
 k_vertical_offset = 0.6;
 k_vertical_p = 3.0;
-k_roll_p = 50.0;
+k_roll_p = 10.0;
 k_pitch_p = 30.0;
 target_altitude = 1.0;
 roll_disturbance = 0.0;
@@ -89,7 +89,7 @@ while (robot.step(timestep) != -1):
 	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
 	yaw_input = yaw_disturbance
 	clamped_difference_altitude = numpy.clip(target_altitude - altitude + k_vertical_offset, -1.0, 1.0)
-	vertical_input = k_vertical_p * pow(clamped_difference_altitude, 3.0)
+	vertical_input = k_vertical_p * pow(clamped_difference_altitude, 1.0)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
