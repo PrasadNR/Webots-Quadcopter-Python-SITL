@@ -5,7 +5,7 @@ import mavic2proHelper
 import cv2
 import numpy
 
-TIME_STEP = 64
+TIME_STEP = 4
 TAKEOFF_THRESHOLD_VELOCITY = 163
 
 robot = Robot()
@@ -47,13 +47,8 @@ pitch_disturbance = 0.0;
 yaw_disturbance = 0.0;
 M_PI = numpy.pi;
 
-pitch_factor = 1.5;
-roll_factor = 1.0;
-throttle_factor = 1.0;
-yaw_factor = 1.0;
-
-pitch_offset = -0.075;
-roll_offset = 0.075;
+pitch_offset = -0.11;
+roll_offset = 0.05;
 throttle_offset = 0.0;
 yaw_offset = -0.02;
 
@@ -77,11 +72,11 @@ while (robot.step(timestep) != -1):
 		camera_pitch_motor.setPosition(camera_pitch_motor_position)
 
 	key = keyboard.getKey()
-	
+
 	if key == keyboard.UP:
-		pitch_disturbance = 2.0
+		pitch_disturbance = 0.5
 	if key == keyboard.DOWN:
-		pitch_disturbance = -2.0
+		pitch_disturbance = -0.5
 	if key == keyboard.LEFT:
 		yaw_disturbance = -1.3
 	if key == keyboard.RIGHT:
@@ -94,6 +89,10 @@ while (robot.step(timestep) != -1):
 		target_altitude += 0.05
 	if key == ord('2'):
 		target_altitude -= 0.05
+	if key == ord('0'):
+		pitch_disturbance = 0.0
+		yaw_disturbance = 0.0
+		roll_disturbance = 0.0
 
 	roll_input = k_roll_p * numpy.clip(roll, -1.0, 1.0) + roll_acceleration + roll_disturbance
 	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
@@ -103,12 +102,12 @@ while (robot.step(timestep) != -1):
 	if altitude > target_altitude:
 		vertical_input = k_vertical_p * k_vertical_offset
 	
-	print(altitude, vertical_input)
+	print(gps.getValues()[0], gps.getValues()[1], gps.getValues()[2])
 
-	roll_input = roll_factor * (roll_input + roll_offset)
-	pitch_input = pitch_factor * (pitch_input + pitch_offset)
-	yaw_input = yaw_factor * (yaw_input + yaw_offset)
-	vertical_input = throttle_factor * (vertical_input + throttle_offset)
+	roll_input = roll_input + roll_offset
+	pitch_input = pitch_input + pitch_offset
+	yaw_input = yaw_input + yaw_offset
+	vertical_input = vertical_input + throttle_offset
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
