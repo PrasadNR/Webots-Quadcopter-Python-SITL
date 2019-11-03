@@ -37,8 +37,8 @@ keyboard = Keyboard();
 keyboard.enable(TIME_STEP);
 
 k_vertical_thrust = 68.5;
-k_vertical_offset = 0.6;
-k_vertical_p = 1.0;
+k_vertical_p = 1.5;
+k_vertical_offset = 0.3;
 k_roll_p = 5.0;
 k_pitch_p = 10.0;
 target_altitude = 1.0;
@@ -47,15 +47,15 @@ pitch_disturbance = 0.0;
 yaw_disturbance = 0.0;
 M_PI = numpy.pi;
 
-pitch_factor = 1.0;
+pitch_factor = 1.5;
 roll_factor = 1.0;
 throttle_factor = 1.0;
 yaw_factor = 1.0;
 
-pitch_offset = 0.0;
-roll_offset = 0.0;
+pitch_offset = -0.075;
+roll_offset = 0.075;
 throttle_offset = 0.0;
-yaw_offset = 0.0;
+yaw_offset = -0.02;
 
 while (robot.step(timestep) != -1):
 
@@ -98,8 +98,12 @@ while (robot.step(timestep) != -1):
 	roll_input = k_roll_p * numpy.clip(roll, -1.0, 1.0) + roll_acceleration + roll_disturbance
 	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
 	yaw_input = yaw_disturbance
-	clamped_difference_altitude = numpy.clip(target_altitude - altitude + k_vertical_offset, -1.0, 1.0)
-	vertical_input = k_vertical_p * clamped_difference_altitude ** 1.5
+	
+	vertical_input = numpy.clip(k_vertical_p * (1.0 - altitude / target_altitude), 0.0, k_vertical_p)
+	if altitude > target_altitude:
+		vertical_input = k_vertical_p * k_vertical_offset
+	
+	print(altitude, vertical_input)
 
 	roll_input = roll_factor * (roll_input + roll_offset)
 	pitch_input = pitch_factor * (pitch_input + pitch_offset)
