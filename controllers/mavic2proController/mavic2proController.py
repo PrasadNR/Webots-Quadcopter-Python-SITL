@@ -53,7 +53,7 @@ roll_offset = 0.05;
 throttle_offset = 0.0;
 yaw_offset = -0.02;
 
-throttlePID = PID(1, 0.1, 5.0, setpoint=target_altitude)
+throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
 
 while (robot.step(timestep) != -1):
 
@@ -104,11 +104,8 @@ while (robot.step(timestep) != -1):
 	throttlePIDaltitude = throttlePID(altitude)
 
 	vertical_input = k_vertical_p * throttlePIDaltitude
-	#vertical_input = numpy.clip(k_vertical_p * (1.0 - throttlePIDaltitude / target_altitude), 0.0, k_vertical_p)
-	#if altitude > target_altitude:
-		#vertical_input = k_vertical_p * k_vertical_offset
 	
-	print(gps.getValues()[0], gps.getValues()[1], gps.getValues()[2])
+	print(gps.getValues()[1])
 
 	roll_input = roll_input + roll_offset
 	pitch_input = pitch_input + pitch_offset
