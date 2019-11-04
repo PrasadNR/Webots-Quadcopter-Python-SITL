@@ -41,11 +41,10 @@ k_pitch_p = 10.0;
 target_altitude = 1.0;
 roll_disturbance = 0.0;
 pitch_disturbance = 0.0;
-yaw_disturbance = 0.0;
 M_PI = numpy.pi;
 
-pitchPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
-rollPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
+pitchPID = PID(1.0, 0.0, 1.0, setpoint=0.0)
+rollPID = PID(10.0, 0.0, 5.0, setpoint=0.0)
 throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
 yawPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
 
@@ -55,19 +54,12 @@ while (robot.step(timestep) != -1):
 	front_left_led.set(led_state)
 	front_right_led.set(int(not(led_state)))
 
-	roll = imu.getRollPitchYaw()[0] + M_PI/2.0
+	roll = imu.getRollPitchYaw()[0] + M_PI / 2.0
 	pitch = imu.getRollPitchYaw()[1]
 	yaw = compass.getValues()[1]
 	altitude = gps.getValues()[1]
 	roll_acceleration = gyro.getValues()[0]
 	pitch_acceleration = gyro.getValues()[1]
-	camera_roll_motor_position = -0.115 * roll_acceleration
-	camera_pitch_motor_position = -0.1 * pitch_acceleration
-
-	if not(numpy.isnan(camera_roll_motor_position)):
-		camera_roll_motor.setPosition(camera_roll_motor_position)
-	if not(numpy.isnan(camera_pitch_motor_position)):
-		camera_pitch_motor.setPosition(camera_pitch_motor_position)
 
 	key = keyboard.getKey()
 
@@ -76,30 +68,22 @@ while (robot.step(timestep) != -1):
 	if key == keyboard.DOWN:
 		pitch_disturbance = -0.5
 	if key == keyboard.LEFT:
-		yaw_disturbance = -1.3
-	if key == keyboard.RIGHT:
-		yaw_disturbance = 1.3
-	if key == ord('4'):
 		roll_disturbance = 1.0
-	if key == ord('6'):
+	if key == keyboard.RIGHT:
 		roll_disturbance = -1.0
-	if key == ord('8'):
-		target_altitude += 0.05
-	if key == ord('2'):
-		target_altitude -= 0.05
 	if key == ord('0'):
 		pitch_disturbance = 0.0
-		yaw_disturbance = 0.0
 		roll_disturbance = 0.0
 
 	roll_input = k_roll_p * numpy.clip(roll, -1.0, 1.0) + roll_acceleration + roll_disturbance
-	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
-	yaw_input = yaw_disturbance
+	#pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
 	
 	vertical_input = throttlePID(altitude)
 	yaw_input = yawPID(yaw)
 	
-	print(yaw)
+	x = gps.getValues()[2]
+	y = gps.getValues()[0]
+	pitch_input = pitchPID(y)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
