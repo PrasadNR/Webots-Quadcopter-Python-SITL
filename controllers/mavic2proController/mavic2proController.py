@@ -4,7 +4,7 @@ import cv2
 import numpy
 from simple_pid import PID
 
-TIME_STEP = 4
+TIME_STEP = 1
 TAKEOFF_THRESHOLD_VELOCITY = 163
 
 robot = Robot()
@@ -44,7 +44,10 @@ pitch_disturbance = 0.0;
 yaw_disturbance = 0.0;
 M_PI = numpy.pi;
 
+pitchPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
+rollPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
 throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
+yawPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
 
 while (robot.step(timestep) != -1):
 
@@ -54,6 +57,7 @@ while (robot.step(timestep) != -1):
 
 	roll = imu.getRollPitchYaw()[0] + M_PI/2.0
 	pitch = imu.getRollPitchYaw()[1]
+	yaw = compass.getValues()[1]
 	altitude = gps.getValues()[1]
 	roll_acceleration = gyro.getValues()[0]
 	pitch_acceleration = gyro.getValues()[1]
@@ -93,8 +97,9 @@ while (robot.step(timestep) != -1):
 	yaw_input = yaw_disturbance
 	
 	vertical_input = throttlePID(altitude)
+	yaw_input = yawPID(yaw)
 	
-	print(gps.getValues()[1])
+	print(yaw)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
