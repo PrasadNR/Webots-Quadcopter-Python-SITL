@@ -4,6 +4,7 @@ from controller import *
 import mavic2proHelper
 import cv2
 import numpy
+from simple_pid import PID
 
 TIME_STEP = 4
 TAKEOFF_THRESHOLD_VELOCITY = 163
@@ -52,6 +53,8 @@ roll_offset = 0.05;
 throttle_offset = 0.0;
 yaw_offset = -0.02;
 
+throttlePID = PID(1, 0.1, 5.0, setpoint=target_altitude)
+
 while (robot.step(timestep) != -1):
 
 	led_state = int(robot.getTime()) % 2
@@ -98,9 +101,12 @@ while (robot.step(timestep) != -1):
 	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
 	yaw_input = yaw_disturbance
 	
-	vertical_input = numpy.clip(k_vertical_p * (1.0 - altitude / target_altitude), 0.0, k_vertical_p)
-	if altitude > target_altitude:
-		vertical_input = k_vertical_p * k_vertical_offset
+	throttlePIDaltitude = throttlePID(altitude)
+
+	vertical_input = k_vertical_p * throttlePIDaltitude
+	#vertical_input = numpy.clip(k_vertical_p * (1.0 - throttlePIDaltitude / target_altitude), 0.0, k_vertical_p)
+	#if altitude > target_altitude:
+		#vertical_input = k_vertical_p * k_vertical_offset
 	
 	print(gps.getValues()[0], gps.getValues()[1], gps.getValues()[2])
 
