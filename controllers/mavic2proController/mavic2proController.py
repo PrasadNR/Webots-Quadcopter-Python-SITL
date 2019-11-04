@@ -1,5 +1,3 @@
-#This is the modified Python version (which I wrote) of https://github.com/cyberbotics/webots/blob/revision/projects/robots/dji/mavic/controllers/mavic2pro/mavic2pro.c
-
 from controller import *
 import mavic2proHelper
 import cv2
@@ -38,8 +36,6 @@ keyboard = Keyboard();
 keyboard.enable(TIME_STEP);
 
 k_vertical_thrust = 68.5;
-k_vertical_p = 1.5;
-k_vertical_offset = 0.3;
 k_roll_p = 5.0;
 k_pitch_p = 10.0;
 target_altitude = 1.0;
@@ -47,11 +43,6 @@ roll_disturbance = 0.0;
 pitch_disturbance = 0.0;
 yaw_disturbance = 0.0;
 M_PI = numpy.pi;
-
-pitch_offset = -0.11;
-roll_offset = 0.05;
-throttle_offset = 0.0;
-yaw_offset = -0.02;
 
 throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
 
@@ -101,16 +92,9 @@ while (robot.step(timestep) != -1):
 	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
 	yaw_input = yaw_disturbance
 	
-	throttlePIDaltitude = throttlePID(altitude)
-
-	vertical_input = k_vertical_p * throttlePIDaltitude
+	vertical_input = throttlePID(altitude)
 	
 	print(gps.getValues()[1])
-
-	roll_input = roll_input + roll_offset
-	pitch_input = pitch_input + pitch_offset
-	yaw_input = yaw_input + yaw_offset
-	vertical_input = vertical_input + throttle_offset
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
