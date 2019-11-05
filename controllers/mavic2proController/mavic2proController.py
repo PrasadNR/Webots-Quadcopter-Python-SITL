@@ -43,8 +43,8 @@ roll_disturbance = 0.0;
 pitch_disturbance = 0.0;
 M_PI = numpy.pi;
 
-target_x = 1.0
-target_y = 1.0
+target_x = 0.5
+target_y = 0.5
 
 pitchPID = PID(2.0, 0.0, 3.0, setpoint=target_y)
 rollPID = PID(2.0, 0.0, 3.0, setpoint=target_x)
@@ -64,29 +64,16 @@ while (robot.step(timestep) != -1):
 	roll_acceleration = gyro.getValues()[0]
 	pitch_acceleration = gyro.getValues()[1]
 
-	key = keyboard.getKey()
-
-	if key == keyboard.UP:
-		pitch_disturbance = 0.5
-	if key == keyboard.DOWN:
-		pitch_disturbance = -0.5
-	if key == keyboard.LEFT:
-		roll_disturbance = 1.0
-	if key == keyboard.RIGHT:
-		roll_disturbance = -1.0
-	if key == ord('0'):
-		pitch_disturbance = 0.0
-		roll_disturbance = 0.0
-	
 	vertical_input = throttlePID(altitude)
 	yaw_input = yawPID(yaw)
 	
 	x = gps.getValues()[2]
 	y = gps.getValues()[0]
 	
-	roll_input = k_roll_p * numpy.clip(roll, -1.0, 1.0) + roll_acceleration + rollPID(target_x - x)
-	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitchPID(y - target_y)
+	roll_input = k_roll_p * roll + roll_acceleration + rollPID(target_x - x)
+	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(y - target_y)
 
+	#print(roll_input, pitch_input)
 	print(x, y)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
