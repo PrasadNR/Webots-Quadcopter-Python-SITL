@@ -43,8 +43,11 @@ roll_disturbance = 0.0;
 pitch_disturbance = 0.0;
 M_PI = numpy.pi;
 
-pitchPID = PID(1.0, 0.0, 1.0, setpoint=0.0)
-rollPID = PID(10.0, 0.0, 5.0, setpoint=0.0)
+target_x = 1.0
+target_y = 1.0
+
+pitchPID = PID(2.0, 0.0, 3.0, setpoint=target_y)
+rollPID = PID(2.0, 0.0, 3.0, setpoint=target_x)
 throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
 yawPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
 
@@ -74,16 +77,17 @@ while (robot.step(timestep) != -1):
 	if key == ord('0'):
 		pitch_disturbance = 0.0
 		roll_disturbance = 0.0
-
-	roll_input = k_roll_p * numpy.clip(roll, -1.0, 1.0) + roll_acceleration + roll_disturbance
-	#pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitch_disturbance
 	
 	vertical_input = throttlePID(altitude)
 	yaw_input = yawPID(yaw)
 	
 	x = gps.getValues()[2]
 	y = gps.getValues()[0]
-	pitch_input = pitchPID(y)
+	
+	roll_input = k_roll_p * numpy.clip(roll, -1.0, 1.0) + roll_acceleration + rollPID(target_x - x)
+	pitch_input = k_pitch_p * numpy.clip(pitch, -1.0, 1.0) - pitch_acceleration + pitchPID(y - target_y)
+
+	print(x, y)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
