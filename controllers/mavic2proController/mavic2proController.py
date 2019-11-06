@@ -3,9 +3,21 @@ import mavic2proHelper
 import cv2
 import numpy
 from simple_pid import PID
+import csv
 
-TIME_STEP = 1
-TAKEOFF_THRESHOLD_VELOCITY = 163
+target_altitude = 1.0;
+target_x = 1.0
+target_y = 1.0
+
+params = dict()
+with open("params.csv", "r") as f:
+	lines = csv.reader(f)
+	for line in lines:
+		params[line[0]] = line[1]
+
+TIME_STEP = int(params["TIME_STEP"])
+TAKEOFF_THRESHOLD_VELOCITY = int(params["TAKEOFF_THRESHOLD_VELOCITY"])
+M_PI = numpy.pi;
 
 robot = Robot()
 
@@ -32,26 +44,14 @@ gyro.enable(TIME_STEP)
 camera_roll_motor = robot.getMotor("camera roll")
 camera_pitch_motor = robot.getMotor("camera pitch")
 
-keyboard = Keyboard();
-keyboard.enable(TIME_STEP);
+k_vertical_thrust, k_roll_p, k_pitch_p = float(params["k_vertical_thrust"]), float(params["k_roll_p"]), float(params["k_pitch_p"])
 
-k_vertical_thrust = 68.5;
-k_roll_p = 5.0;
-k_pitch_p = 10.0;
-target_altitude = 1.0;
-roll_disturbance = 0.0;
-pitch_disturbance = 0.0;
-M_PI = numpy.pi;
+target_y = float(params["yPositionFactor"]) * target_y
 
-target_x = 1.0
-target_y = 0.5
-
-target_y = 0.5 * target_y
-
-pitchPID = PID(2.0, 0.0, 2.0, setpoint=target_y)
-rollPID = PID(2.0, 0.0, 3.0, setpoint=target_x)
-throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
-yawPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
+pitchPID = PID(float(params["pitch_Kp"]), float(params["pitch_Ki"]), float(params["pitch_Kd"]), setpoint=target_y)
+rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["roll_Kd"]), setpoint=target_x)
+throttlePID = PID(float(params["throttle_Kp"]), float(params["throttle_Ki"]), float(params["throttle_Kd"]), setpoint=target_altitude)
+yawPID = PID(float(params["yaw_Kp"]), float(params["yaw_Ki"]), float(params["yaw_Kd"]), setpoint=float(params["yaw_setpoint"]))
 
 while (robot.step(timestep) != -1):
 
@@ -72,7 +72,7 @@ while (robot.step(timestep) != -1):
 	x = gps.getValues()[2]
 	y = gps.getValues()[0]
 	
-	roll_input = k_roll_p * roll + roll_acceleration + rollPID(2.0 * target_x - x)
+	roll_input = k_roll_p * roll + roll_acceleration + rollPID(float(params["xPositionFactor"]) * target_x - x)
 	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(y - target_y)
 
 	print(x, y)
