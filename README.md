@@ -30,7 +30,7 @@ Note: Any of the versions of Python supported by Webots is needed.
 Link: https://cyberbotics.com/doc/guide/using-python
 
 3. Install libraries needed to run this simulation.  
- a. `pip install simple-pid`  Source: https://github.com/m-lundberg/simple-pid
+ a. `pip install simple-pid`  Source: https://github.com/m-lundberg/simple-pid  
  b. `pip install numpy`  
  c. Install Python OpenCV.  
    - `pip install opencv-contrib-python` (Preferred. However, this installs opencv-contrib which may contain patented algorithms. Unofficial community whl)
