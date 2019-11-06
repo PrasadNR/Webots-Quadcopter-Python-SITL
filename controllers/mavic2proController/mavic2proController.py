@@ -44,7 +44,7 @@ pitch_disturbance = 0.0;
 M_PI = numpy.pi;
 
 target_x = 0.5
-target_y = 0.5
+target_y = 1.0
 
 pitchPID = PID(2.0, 0.0, 3.0, setpoint=target_y)
 rollPID = PID(2.0, 0.0, 3.0, setpoint=target_x)
@@ -70,10 +70,9 @@ while (robot.step(timestep) != -1):
 	x = gps.getValues()[2]
 	y = gps.getValues()[0]
 	
-	roll_input = k_roll_p * roll + roll_acceleration + rollPID(target_x - x)
+	roll_input = k_roll_p * roll + roll_acceleration + rollPID(2.0 * target_x - x)
 	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(y - target_y)
 
-	#print(roll_input, pitch_input)
 	print(x, y)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
