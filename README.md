@@ -37,3 +37,7 @@ Link: https://cyberbotics.com/doc/guide/using-python
    - `pip install opencv-python` (Unofficial community whl)
    - Downloading source code from https://opencv.org and compiling (or checking if cv2.py or something like python2_cv.py and python3_cv.py files are present after downloading OpenCV exe executables (for Windows users only)). This method requires compilation and is not recommended unless performance is needed in simulations and it takes some time to install.
    - Ubuntu and linux users may be able to install OpenCV via system package managers like `apt`, `aptitude` etc.
+
+## Running the simulator
+
+Just double click on (or run) _Webots-Quadcopter-Python-SITL/blob/master/worlds/empty.wbt_
