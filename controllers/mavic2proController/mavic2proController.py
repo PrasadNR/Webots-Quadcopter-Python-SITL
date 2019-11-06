@@ -43,10 +43,12 @@ roll_disturbance = 0.0;
 pitch_disturbance = 0.0;
 M_PI = numpy.pi;
 
-target_x = 0.5
-target_y = 1.0
+target_x = 1.0
+target_y = 0.5
 
-pitchPID = PID(2.0, 0.0, 3.0, setpoint=target_y)
+target_y = 0.5 * target_y
+
+pitchPID = PID(2.0, 0.0, 2.0, setpoint=target_y)
 rollPID = PID(2.0, 0.0, 3.0, setpoint=target_x)
 throttlePID = PID(10.0, 0.0, 5.0, setpoint=target_altitude)
 yawPID = PID(2.0, 0.0, 3.0, setpoint=0.0)
