@@ -13,3 +13,5 @@ Also, few of the repositories have been archived now and I believe Erle Robotics
 1. Building a cross-platform compatible (main target OS being Windows, Linux and Mac OS) with pure Python implementation of controllers for multi-type, multi-vehicle SITL simulator. As I could not find anything like this yet for object tracking in Webots, I started out with Mavic 2 Pro Quadcopter and Pioneer 3DX rover.
 
 2. I also wrote pure Python SITL Flight Controller (for waypoint navigation) as I could not find pure general purpose quadcopter controller in Python for SITL. It can also be used in hardware (and it is general purpose code, so, it will work with all hardwares that can run Python interpreter).
+
+![Screenshot](docs/doc_image.jpeg)
