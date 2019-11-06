@@ -14,4 +14,6 @@ Also, few of the repositories have been archived now and I believe Erle Robotics
 
 2. I also wrote pure Python SITL Flight Controller (for waypoint navigation) as I could not find pure general purpose quadcopter controller in Python for SITL. It can also be used in hardware (and it is general purpose code, so, it will work with all hardwares that can run Python interpreter).
 
-![Screenshot](docs/doc_image.jpeg)
+<p align="center">
+  <img src="docs/doc_image.jpeg" width="80%">
+</p>
