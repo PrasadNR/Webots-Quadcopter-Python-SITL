@@ -5,6 +5,8 @@ import numpy
 from simple_pid import PID
 import csv
 
+target_altitude = 1.0;
+
 params = dict()
 with open("params.csv", "r") as f:
 	lines = csv.reader(f)
@@ -15,11 +17,10 @@ TIME_STEP = int(params["TIME_STEP"])
 TAKEOFF_THRESHOLD_VELOCITY = int(params["TAKEOFF_THRESHOLD_VELOCITY"])
 M_PI = numpy.pi;
 
-target_altitude = float(params["target_altitude"])
-
 robot = Robot()
 
 [frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor] = mavic2proHelper.getMotorAll(robot)
+MAX_PROPELLER_VELOCITY = int(frontLeftMotor.getMaxVelocity())
 
 timestep = int(robot.getBasicTimeStep())
 mavic2proMotors = mavic2proHelper.getMotorAll(robot)
@@ -30,12 +31,18 @@ camera = Camera("camera")
 camera.enable(TIME_STEP)
 front_left_led = LED("front left led")
 front_right_led = LED("front right led")
+imu = InertialUnit("inertial unit")
+imu.enable(TIME_STEP)
 gps = GPS("gps")
 gps.enable(TIME_STEP)
 compass = Compass("compass")
 compass.enable(TIME_STEP)
 gyro = Gyro("gyro")
 gyro.enable(TIME_STEP)
+camera_roll_motor = robot.getMotor("camera roll")
+camera_pitch_motor = robot.getMotor("camera pitch")
+
+k_vertical_thrust, k_roll_p, k_pitch_p = float(params["k_vertical_thrust"]), float(params["k_roll_p"]), float(params["k_pitch_p"])
 
 pitchPID = PID(float(params["pitch_Kp"]), float(params["pitch_Ki"]), float(params["pitch_Kd"]), setpoint=0.0)
 rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["roll_Kd"]), setpoint=0.0)
@@ -67,15 +74,15 @@ while (robot.step(timestep) != -1):
 	rollPID.setpoint = -targetX
 	pitchPID.setpoint = targetY
 	
-	roll_input = float(params["k_roll_p"]) * roll + roll_acceleration + rollPID(-xGPS)
-	pitch_input = float(params["k_pitch_p"]) * pitch - pitch_acceleration + pitchPID(yGPS)
+	roll_input = k_roll_p * roll + roll_acceleration + rollPID(-xGPS)
+	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(yGPS)
 
 	print(xGPS, yGPS)
 
-	front_left_motor_input = float(params["k_vertical_thrust"]) + vertical_input - roll_input - pitch_input + yaw_input
-	front_right_motor_input = float(params["k_vertical_thrust"]) + vertical_input + roll_input - pitch_input - yaw_input
-	rear_left_motor_input = float(params["k_vertical_thrust"]) + vertical_input - roll_input + pitch_input - yaw_input
-	rear_right_motor_input = float(params["k_vertical_thrust"]) + vertical_input + roll_input + pitch_input + yaw_input
+	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
+	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
+	rear_left_motor_input = k_vertical_thrust + vertical_input - roll_input + pitch_input - yaw_input
+	rear_right_motor_input = k_vertical_thrust + vertical_input + roll_input + pitch_input + yaw_input
 
 	if not(numpy.isnan(front_left_motor_input)):
 		mavic2proHelper.motorsSpeed(robot, front_left_motor_input, -front_right_motor_input, -rear_left_motor_input, rear_right_motor_input)
