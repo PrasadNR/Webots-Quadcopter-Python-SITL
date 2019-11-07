@@ -60,20 +60,26 @@ while (robot.step(timestep) != -1):
 	roll = imu.getRollPitchYaw()[0] + M_PI / 2.0
 	pitch = imu.getRollPitchYaw()[1]
 	yaw = compass.getValues()[1]
-	altitude = gps.getValues()[1]
 	roll_acceleration = gyro.getValues()[0]
 	pitch_acceleration = gyro.getValues()[1]
+	
+	xGPS = gps.getValues()[2]
+	yGPS = gps.getValues()[0]
+	zGPS = gps.getValues()[1]
 
-	vertical_input = throttlePID(altitude)
+	vertical_input = throttlePID(zGPS)
 	yaw_input = yawPID(yaw)
 	
-	x = gps.getValues()[2]
-	y = gps.getValues()[0]
-	
-	roll_input = k_roll_p * roll + roll_acceleration + rollPID(float(params["xPositionFactor"]) * targetX - x)
-	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(y)
+	targetX = -1.0
+	targetY = -1.0
 
-	print(x, y)
+	rollPID.setpoint = -targetX
+	pitchPID.setpoint = targetY
+	
+	roll_input = k_roll_p * roll + roll_acceleration + rollPID(-xGPS)
+	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(yGPS)
+
+	print(xGPS, yGPS)
 
 	front_left_motor_input = k_vertical_thrust + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = k_vertical_thrust + vertical_input + roll_input - pitch_input - yaw_input
