@@ -44,6 +44,8 @@ rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["
 throttlePID = PID(float(params["throttle_Kp"]), float(params["throttle_Ki"]), float(params["throttle_Kd"]), setpoint=target_altitude)
 yawPID = PID(float(params["yaw_Kp"]), float(params["yaw_Ki"]), float(params["yaw_Kd"]), setpoint=float(params["yaw_setpoint"]))
 
+altitude_attained = False
+
 while (robot.step(timestep) != -1):
 
 	led_state = int(robot.getTime()) % 2
@@ -62,7 +64,12 @@ while (robot.step(timestep) != -1):
 
 	vertical_input = throttlePID(zGPS)
 	yaw_input = yawPID(yaw)
-	
+
+	if zGPS > target_altitude * float(params["altitude_attainment_factor"]):
+		altitude_attained = True
+
+	print(altitude_attained, zGPS)
+
 	targetX = -1.0
 	targetY = -1.0
 
@@ -72,7 +79,7 @@ while (robot.step(timestep) != -1):
 	roll_input = float(params["k_roll_p"]) * roll + roll_acceleration + rollPID(-xGPS)
 	pitch_input = float(params["k_pitch_p"]) * pitch - pitch_acceleration + pitchPID(yGPS)
 
-	print(xGPS, yGPS)
+	#print(xGPS, yGPS)
 
 	front_left_motor_input = float(params["k_vertical_thrust"]) + vertical_input - roll_input - pitch_input + yaw_input
 	front_right_motor_input = float(params["k_vertical_thrust"]) + vertical_input + roll_input - pitch_input - yaw_input

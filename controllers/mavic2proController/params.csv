@@ -3,7 +3,7 @@ TAKEOFF_THRESHOLD_VELOCITY,163
 k_vertical_thrust,68.5
 k_roll_p,5
 k_pitch_p,10
-target_altitude,1
+target_altitude,1.5
 pitch_Kp,2
 pitch_Ki,0
 pitch_Kd,2
@@ -17,3 +17,4 @@ yaw_Kp,2
 yaw_Ki,0
 yaw_Kd,3
 yaw_setpoint,0
+altitude_attainment_factor,0.8
