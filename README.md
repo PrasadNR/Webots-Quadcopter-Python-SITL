@@ -4,7 +4,7 @@ _Note: This repository is under heavy development right now (and will likely be 
 
 ## Background
 
-A couple of years ago, I had authored a paper on object tracking Quadcopter. (Link: https://www.academia.edu/40403950/Single_Horizontal_Camera-Based_Object_Tracking_Quadcopter_Using_StaGaus_Algorithm ) I had some difficulties with reproducible results (with physical drone as mentioned in the paper). However, back then, I ended up building a ROS and Gazebo based multi-type multi-vehicle SITL (Software In The Loop) simulator (as detailed in the paper). The setup was extensive and worked only with a specific version of Ubuntu.
+A couple of years ago, I had authored a paper on object tracking Quadcopter. (Link: https://www.academia.edu/40403950/Single_Horizontal_Camera-Based_Object_Tracking_Quadcopter_Using_StaGaus_Algorithm ) I had some difficulties with reproducible results (with physical drone as mentioned in the paper). However, back then, I ended up building a ROS and Gazebo based multi-type multi-vehicle SITL (Software In The Loop) simulator (as detailed in the paper). The setup was extensive and worked only with a specific version of Ubuntu (requiring `sudo` and root access).
 
 Also, few of the repositories have been archived now and I believe Erle Robotics has shut down completely and their github repositories are archived (which means that my ROS Gazebo SITL simulator may/may not be fully reproducible. At least, it won't be easy to reproduce my research to say the least).
 

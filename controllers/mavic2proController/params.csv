@@ -5,7 +5,6 @@ k_roll_p,5
 k_pitch_p,10
 target_altitude,1
 xPositionFactor,2
-yPositionFactor,0.5
 pitch_Kp,2
 pitch_Ki,0
 pitch_Kd,2

@@ -6,8 +6,8 @@ from simple_pid import PID
 import csv
 
 target_altitude = 1.0;
-target_x = 1.0
-target_y = 1.0
+targetX = 1.0
+targetY = 1.0
 
 params = dict()
 with open("params.csv", "r") as f:
@@ -46,10 +46,8 @@ camera_pitch_motor = robot.getMotor("camera pitch")
 
 k_vertical_thrust, k_roll_p, k_pitch_p = float(params["k_vertical_thrust"]), float(params["k_roll_p"]), float(params["k_pitch_p"])
 
-target_y = float(params["yPositionFactor"]) * target_y
-
-pitchPID = PID(float(params["pitch_Kp"]), float(params["pitch_Ki"]), float(params["pitch_Kd"]), setpoint=target_y)
-rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["roll_Kd"]), setpoint=target_x)
+pitchPID = PID(float(params["pitch_Kp"]), float(params["pitch_Ki"]), float(params["pitch_Kd"]), setpoint=targetY)
+rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["roll_Kd"]), setpoint=targetX)
 throttlePID = PID(float(params["throttle_Kp"]), float(params["throttle_Ki"]), float(params["throttle_Kd"]), setpoint=target_altitude)
 yawPID = PID(float(params["yaw_Kp"]), float(params["yaw_Ki"]), float(params["yaw_Kd"]), setpoint=float(params["yaw_setpoint"]))
 
@@ -72,8 +70,8 @@ while (robot.step(timestep) != -1):
 	x = gps.getValues()[2]
 	y = gps.getValues()[0]
 	
-	roll_input = k_roll_p * roll + roll_acceleration + rollPID(float(params["xPositionFactor"]) * target_x - x)
-	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(y - target_y)
+	roll_input = k_roll_p * roll + roll_acceleration + rollPID(float(params["xPositionFactor"]) * targetX - x)
+	pitch_input = k_pitch_p * pitch - pitch_acceleration + pitchPID(y)
 
 	print(x, y)
 
