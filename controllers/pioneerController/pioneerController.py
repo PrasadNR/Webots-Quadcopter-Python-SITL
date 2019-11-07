@@ -1,73 +1,81 @@
 from controller import *
-import roverHelper
+import mavic2proHelper
 import cv2
-import numpy as np
+import numpy
+from simple_pid import PID
+import csv
 
-TIME_STEP = 64
+params = dict()
+with open("params.csv", "r") as f:
+	lines = csv.reader(f)
+	for line in lines:
+		params[line[0]] = line[1]
+
+TIME_STEP = int(params["TIME_STEP"])
+TAKEOFF_THRESHOLD_VELOCITY = int(params["TAKEOFF_THRESHOLD_VELOCITY"])
+M_PI = numpy.pi;
+
+target_altitude = float(params["target_altitude"])
 
 robot = Robot()
 
-[frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor] = roverHelper.getMotorAll(robot)
-MAX_WHEEL_VELOCITY = frontLeftMotor.getMaxVelocity()
+[frontLeftMotor, frontRightMotor, backLeftMotor, backRightMotor] = mavic2proHelper.getMotorAll(robot)
 
 timestep = int(robot.getBasicTimeStep())
-roverHelper.initialiseMotors(robot, MAX_WHEEL_VELOCITY)
-
-gps = GPS("gps")
-gps.enable(TIME_STEP)
+mavic2proMotors = mavic2proHelper.getMotorAll(robot)
+mavic2proHelper.initialiseMotors(robot, 0)
+mavic2proHelper.motorsSpeed(robot, TAKEOFF_THRESHOLD_VELOCITY, TAKEOFF_THRESHOLD_VELOCITY, TAKEOFF_THRESHOLD_VELOCITY, TAKEOFF_THRESHOLD_VELOCITY)
 
 camera = Camera("camera")
 camera.enable(TIME_STEP)
+front_left_led = LED("front left led")
+front_right_led = LED("front right led")
+gps = GPS("gps")
+gps.enable(TIME_STEP)
+compass = Compass("compass")
+compass.enable(TIME_STEP)
+gyro = Gyro("gyro")
+gyro.enable(TIME_STEP)
 
-teleoperaton = False #THIS IS ONLY FOR DEBUGGING PURPOSES AND USAGE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
-
-if teleoperaton == True:
-	keyboard = Keyboard();
-	keyboard.enable(TIME_STEP);
-	cv2.startWindowThread()
-	cv2.namedWindow("centroid")
+pitchPID = PID(float(params["pitch_Kp"]), float(params["pitch_Ki"]), float(params["pitch_Kd"]), setpoint=0.0)
+rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["roll_Kd"]), setpoint=0.0)
+throttlePID = PID(float(params["throttle_Kp"]), float(params["throttle_Ki"]), float(params["throttle_Kd"]), setpoint=target_altitude)
+yawPID = PID(float(params["yaw_Kp"]), float(params["yaw_Ki"]), float(params["yaw_Kd"]), setpoint=float(params["yaw_setpoint"]))
 
 while (robot.step(timestep) != -1):
 
-	if teleoperaton == True:
-		key = keyboard.getKey();
-		if key == keyboard.UP:
-			roverHelper.movement.forward(robot, MAX_WHEEL_VELOCITY)
-		if key == keyboard.LEFT:
-			roverHelper.movement.left(robot, MAX_WHEEL_VELOCITY)
-		if key == keyboard.DOWN:
-			roverHelper.movement.backward(robot, MAX_WHEEL_VELOCITY)
-		if key == keyboard.RIGHT:
-			roverHelper.movement.right(robot, MAX_WHEEL_VELOCITY)
-		if key == keyboard.END:
-			roverHelper.movement.brake(robot, MAX_WHEEL_VELOCITY)
+	led_state = int(robot.getTime()) % 2
+	front_left_led.set(led_state)
+	front_right_led.set(int(not(led_state)))
 
-	gpsLocation = gps.getValues()
-	cameraData = camera.getImage()
-	image = np.frombuffer(cameraData, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4)) #BGRA
+	roll = imu.getRollPitchYaw()[0] + M_PI / 2.0
+	pitch = imu.getRollPitchYaw()[1]
+	yaw = compass.getValues()[1]
+	roll_acceleration = gyro.getValues()[0]
+	pitch_acceleration = gyro.getValues()[1]
 	
-	red = image[int(camera.getHeight()/2):camera.getHeight(), :, 2]
-	green = image[int(camera.getHeight()/2):camera.getHeight(), :, 1]
-	blue = image[int(camera.getHeight()/2):camera.getHeight(), :, 0]
+	xGPS = gps.getValues()[2]
+	yGPS = gps.getValues()[0]
+	zGPS = gps.getValues()[1]
 
-	hsvImage = cv2.cvtColor(np.dstack((blue, green, red)), cv2.COLOR_BGR2HSV)
-	lowerHSV = np.array([120, 0, 50])
-	upperHSV = np.array([180, 255, 200])
-
-	momentMask = cv2.inRange(hsvImage, lowerHSV, upperHSV)
-	moment = cv2.moments(momentMask, False)
+	vertical_input = throttlePID(zGPS)
+	yaw_input = yawPID(yaw)
 	
-	try:
-		cX = int(moment["m10"] / moment["m00"])
-		cY = int(moment["m01"] / moment["m00"])
-	except ZeroDivisionError:
-		cX, cY = int(camera.getHeight()/2), int(camera.getWidth()/2)
+	targetX = -1.0
+	targetY = -1.0
 
-	k = (2 * cX - camera.getWidth()) / camera.getWidth()
-	roverHelper.lineFollow(robot, MAX_WHEEL_VELOCITY, k)
+	rollPID.setpoint = -targetX
+	pitchPID.setpoint = targetY
+	
+	roll_input = float(params["k_roll_p"]) * roll + roll_acceleration + rollPID(-xGPS)
+	pitch_input = float(params["k_pitch_p"]) * pitch - pitch_acceleration + pitchPID(yGPS)
 
-	if teleoperaton == True:
-		cXdisplay, cYdisplay = int(cX), int(cY + camera.getHeight()/2)
-		cv2.circle(image, (cXdisplay, cYdisplay), 2, (0,255,0), 3)
-		cv2.imshow("centroid", image)
-		cv2.waitKey(TIME_STEP)
+	print(xGPS, yGPS)
+
+	front_left_motor_input = float(params["k_vertical_thrust"]) + vertical_input - roll_input - pitch_input + yaw_input
+	front_right_motor_input = float(params["k_vertical_thrust"]) + vertical_input + roll_input - pitch_input - yaw_input
+	rear_left_motor_input = float(params["k_vertical_thrust"]) + vertical_input - roll_input + pitch_input - yaw_input
+	rear_right_motor_input = float(params["k_vertical_thrust"]) + vertical_input + roll_input + pitch_input + yaw_input
+
+	if not(numpy.isnan(front_left_motor_input)):
+		mavic2proHelper.motorsSpeed(robot, front_left_motor_input, -front_right_motor_input, -rear_left_motor_input, rear_right_motor_input)
