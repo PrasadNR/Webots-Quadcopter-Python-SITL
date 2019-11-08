@@ -73,9 +73,8 @@ while (robot.step(timestep) != -1):
 
 	if receiver.getQueueLength() > 0:
 		message = receiver.getData().decode('utf-8')
-		#xRover, yRover = float(message.split()[0].trim()), float(message.split()[1].trim())
-		#print(xRover, yRover)
-		print(message)
+		xRover, yRover = float(message.split(",")[0].strip()), float(message.split(",")[1].strip())
+		print(xRover, yRover)
 		receiver.nextPacket()
 
 	#if altitude_attained == False:
