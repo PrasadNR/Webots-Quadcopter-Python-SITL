@@ -72,7 +72,11 @@ while (robot.step(timestep) != -1):
 		altitude_attained = True
 
 	if receiver.getQueueLength() > 0:
-		print(receiver.getQueueLength(), receiver.getData().decode('utf-8'))
+		message = receiver.getData().decode('utf-8')
+		#xRover, yRover = float(message.split()[0].trim()), float(message.split()[1].trim())
+		#print(xRover, yRover)
+		print(message)
+		receiver.nextPacket()
 
 	#if altitude_attained == False:
 		#print(zGPS)

@@ -38,8 +38,6 @@ if teleoperaton == True:
 
 while (robot.step(timestep) != -1):
 
-	emitter.send('x'.encode('utf-8'))
-
 	if teleoperaton == True:
 		key = keyboard.getKey();
 		if key == keyboard.UP:
@@ -56,6 +54,9 @@ while (robot.step(timestep) != -1):
 	gpsLocation = gps.getValues()
 	cameraData = camera.getImage()
 	image = np.frombuffer(cameraData, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4)) #BGRA
+
+	xRover, yRover = gps.getValues()[2], gps.getValues()[0]
+	emitter.send((str(xRover) + ", " + str(yRover)).encode('utf-8'))
 	
 	red = image[int(camera.getHeight()/2):camera.getHeight(), :, 2]
 	green = image[int(camera.getHeight()/2):camera.getHeight(), :, 1]
