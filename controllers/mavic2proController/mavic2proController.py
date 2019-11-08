@@ -68,7 +68,8 @@ while (robot.step(timestep) != -1):
 	if zGPS > target_altitude * float(params["altitude_attainment_factor"]):
 		altitude_attained = True
 
-	print(altitude_attained, zGPS)
+	if altitude_attained == False:
+		print(altitude_attained, zGPS)
 
 	targetX = -1.0
 	targetY = -1.0
