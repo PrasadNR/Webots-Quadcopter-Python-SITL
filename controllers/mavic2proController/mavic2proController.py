@@ -47,7 +47,7 @@ rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["
 throttlePID = PID(float(params["throttle_Kp"]), float(params["throttle_Ki"]), float(params["throttle_Kd"]), setpoint=target_altitude)
 yawPID = PID(float(params["yaw_Kp"]), float(params["yaw_Ki"]), float(params["yaw_Kd"]), setpoint=float(params["yaw_setpoint"]))
 
-altitude_attained = False
+targetX, targetY, altitude_attained = 0.0, 0.0, False
 
 while (robot.step(timestep) != -1):
 
@@ -71,17 +71,14 @@ while (robot.step(timestep) != -1):
 	if zGPS > target_altitude * float(params["altitude_attainment_factor"]):
 		altitude_attained = True
 
+	#if altitude_attained == False and receiver.getQueueLength() > 0:
 	if receiver.getQueueLength() > 0:
 		message = receiver.getData().decode('utf-8')
 		xRover, yRover = float(message.split(",")[0].strip()), float(message.split(",")[1].strip())
-		print(xRover, yRover)
 		receiver.nextPacket()
 
-	#if altitude_attained == False:
-		#print(zGPS)
-
-	targetX = -1.0
-	targetY = -1.0
+		targetX = xRover
+		targetY = yRover
 
 	rollPID.setpoint = -targetX
 	pitchPID.setpoint = targetY
