@@ -2,8 +2,15 @@ from controller import *
 import roverHelper
 import cv2
 import numpy as np
+import csv
 
-TIME_STEP = 64
+params = dict()
+with open("../params.csv", "r") as f:
+	lines = csv.reader(f)
+	for line in lines:
+		params[line[0]] = line[1]
+
+TIME_STEP = int(params["TIME_STEP"])
 
 robot = Robot()
 
@@ -19,6 +26,8 @@ gps.enable(TIME_STEP)
 camera = Camera("camera")
 camera.enable(TIME_STEP)
 
+emitter = Emitter("emitter")
+
 teleoperaton = False #THIS VARIABLE IS ONLY FOR DEBUGGING PURPOSES AND USAGE OF THIS VARIABLE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
 
 if teleoperaton == True:
@@ -28,6 +37,8 @@ if teleoperaton == True:
 	cv2.namedWindow("centroid")
 
 while (robot.step(timestep) != -1):
+
+	emitter.send('x'.encode('utf-8'))
 
 	if teleoperaton == True:
 		key = keyboard.getKey();

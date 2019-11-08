@@ -4,9 +4,10 @@ import cv2
 import numpy
 from simple_pid import PID
 import csv
+import struct
 
 params = dict()
-with open("params.csv", "r") as f:
+with open("../params.csv", "r") as f:
 	lines = csv.reader(f)
 	for line in lines:
 		params[line[0]] = line[1]
@@ -38,6 +39,8 @@ compass = Compass("compass")
 compass.enable(TIME_STEP)
 gyro = Gyro("gyro")
 gyro.enable(TIME_STEP)
+receiver = Receiver("receiver")
+receiver.enable(TIME_STEP)
 
 pitchPID = PID(float(params["pitch_Kp"]), float(params["pitch_Ki"]), float(params["pitch_Kd"]), setpoint=0.0)
 rollPID = PID(float(params["roll_Kp"]), float(params["roll_Ki"]), float(params["roll_Kd"]), setpoint=0.0)
@@ -68,8 +71,11 @@ while (robot.step(timestep) != -1):
 	if zGPS > target_altitude * float(params["altitude_attainment_factor"]):
 		altitude_attained = True
 
-	if altitude_attained == False:
-		print(altitude_attained, zGPS)
+	if receiver.getQueueLength() > 0:
+		print(receiver.getQueueLength(), receiver.getData().decode('utf-8'))
+
+	#if altitude_attained == False:
+		#print(zGPS)
 
 	targetX = -1.0
 	targetY = -1.0
