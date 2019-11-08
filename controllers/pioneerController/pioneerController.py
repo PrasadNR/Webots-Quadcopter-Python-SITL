@@ -8,9 +8,9 @@ params = dict()
 with open("../params.csv", "r") as f:
 	lines = csv.reader(f)
 	for line in lines:
-		params[line[0]] = line[1]
+		params[line[2]] = line[3]
 
-TIME_STEP = int(params["TIME_STEP"])
+TIME_STEP = int(params["ROVER_TIME_STEP"])
 
 robot = Robot()
 
@@ -28,7 +28,7 @@ camera.enable(TIME_STEP)
 
 emitter = Emitter("emitter")
 
-teleoperaton = False #THIS VARIABLE IS ONLY FOR DEBUGGING PURPOSES AND USAGE OF THIS VARIABLE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
+teleoperaton = True #THIS VARIABLE IS ONLY FOR DEBUGGING PURPOSES AND USAGE OF THIS VARIABLE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
 
 if teleoperaton == True:
 	keyboard = Keyboard();
@@ -63,8 +63,8 @@ while (robot.step(timestep) != -1):
 	blue = image[int(camera.getHeight()/2):camera.getHeight(), :, 0]
 
 	hsvImage = cv2.cvtColor(np.dstack((blue, green, red)), cv2.COLOR_BGR2HSV)
-	lowerHSV = np.array([120, 0, 50])
-	upperHSV = np.array([180, 255, 200])
+	lowerHSV = np.array([int(params["low_H"]), int(params["low_S"]), int(params["low_V"])])
+	upperHSV = np.array([int(params["high_H"]), int(params["high_S"]), int(params["high_V"])])
 
 	momentMask = cv2.inRange(hsvImage, lowerHSV, upperHSV)
 	moment = cv2.moments(momentMask, False)
@@ -80,6 +80,6 @@ while (robot.step(timestep) != -1):
 
 	if teleoperaton == True:
 		cXdisplay, cYdisplay = int(cX), int(cY + camera.getHeight()/2)
-		cv2.circle(image, (cXdisplay, cYdisplay), 2, (0,255,0), 3)
+		cv2.circle(image, (cXdisplay, cYdisplay), int(params["display_dot_radius"]), (int(params["display_dot_R"]), int(params["display_dot_G"]), int(params["display_dot_B"])), int(params["display_dot_thickness"]))
 		cv2.imshow("centroid", image)
 		cv2.waitKey(TIME_STEP)

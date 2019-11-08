@@ -12,7 +12,7 @@ with open("../params.csv", "r") as f:
 	for line in lines:
 		params[line[0]] = line[1]
 
-TIME_STEP = int(params["TIME_STEP"])
+TIME_STEP = int(params["QUADCOPTER_TIME_STEP"])
 TAKEOFF_THRESHOLD_VELOCITY = int(params["TAKEOFF_THRESHOLD_VELOCITY"])
 M_PI = numpy.pi;
 
