@@ -16,9 +16,6 @@ Pioneer3at {
   extensionSlot [
     Emitter {
     }
-    Camera {
-      near 0.25
-    }
     GPS {
     }
   ]

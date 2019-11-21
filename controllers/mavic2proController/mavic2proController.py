@@ -79,6 +79,8 @@ while (robot.step(timestep) != -1):
 
 		targetX = xRover
 		targetY = yRover
+		#targetX = -1.0
+		#targetY = -1.0
 
 	rollPID.setpoint = -targetX
 	pitchPID.setpoint = targetY

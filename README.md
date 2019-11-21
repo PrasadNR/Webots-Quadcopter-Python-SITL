@@ -1,6 +1,6 @@
 # Webots-Quadcopter-Python-SITL
 
-_Note: This repository is under heavy development right now (and will likely be available by December 2019). The development of this repository is (temporarily) on hold due to a critical bug I found in Webots. Link: https://github.com/cyberbotics/webots/issues/1081_
+_Note: This repository is under heavy development right now (and will likely be available by December 2019). I am creating a workaround for the critical bug I found in Webots. Link: https://github.com/cyberbotics/webots/issues/1081_
 
 ## Background
 
