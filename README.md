@@ -40,4 +40,4 @@ Link: https://cyberbotics.com/doc/guide/using-python
 
 ## Running the simulator
 
-Just double click on (or run) _Webots-Quadcopter-Python-SITL/blob/master/worlds/empty.wbt_
+Just double click on (or run) _Webots-Quadcopter-Python-SITL/blob/master/worlds/ObjectTracking.wbt_
