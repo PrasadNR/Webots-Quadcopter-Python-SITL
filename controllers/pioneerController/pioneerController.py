@@ -1,7 +1,7 @@
 from controller import *
 import roverHelper
 import cv2
-import numpy as np
+import numpy
 import csv
 
 params = dict()
@@ -53,7 +53,7 @@ while (robot.step(timestep) != -1):
 
 	gpsLocation = gps.getValues()
 	cameraData = camera.getImage()
-	image = np.frombuffer(cameraData, np.uint8).reshape((camera.getHeight(), camera.getWidth(), 4)) #BGRA
+	image = numpy.frombuffer(cameraData, numpy.uint8).reshape((camera.getHeight(), camera.getWidth(), 4)) #BGRA
 
 	xRover, yRover = gps.getValues()[2], gps.getValues()[0]
 	emitter.send((str(xRover) + ", " + str(yRover)).encode('utf-8'))
@@ -62,9 +62,9 @@ while (robot.step(timestep) != -1):
 	green = image[int(camera.getHeight()/2):camera.getHeight(), :, 1]
 	blue = image[int(camera.getHeight()/2):camera.getHeight(), :, 0]
 
-	hsvImage = cv2.cvtColor(np.dstack((blue, green, red)), cv2.COLOR_BGR2HSV)
-	lowerHSV = np.array([int(params["low_H"]), int(params["low_S"]), int(params["low_V"])])
-	upperHSV = np.array([int(params["high_H"]), int(params["high_S"]), int(params["high_V"])])
+	hsvImage = cv2.cvtColor(numpy.dstack((blue, green, red)), cv2.COLOR_BGR2HSV)
+	lowerHSV = numpy.array([int(params["low_H"]), int(params["low_S"]), int(params["low_V"])])
+	upperHSV = numpy.array([int(params["high_H"]), int(params["high_S"]), int(params["high_V"])])
 
 	momentMask = cv2.inRange(hsvImage, lowerHSV, upperHSV)
 	moment = cv2.moments(momentMask, False)
