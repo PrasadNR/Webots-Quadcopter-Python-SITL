@@ -8,7 +8,7 @@ def click_point(event, x, y, flags, param):
 	if event == cv2.EVENT_LBUTTONDOWN:
 		clickCoordinates.append((x, y))
 
-image = cv2.imread("rover_circuit.jpg")
+image = cv2.imread("../protos/textures/rover_circuit.jpg")
 cv2.namedWindow("image")
 cv2.setMouseCallback("image", click_point)
 

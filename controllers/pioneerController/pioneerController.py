@@ -22,11 +22,18 @@ roverHelper.initialiseMotors(robot, MAX_WHEEL_VELOCITY)
 
 gps = GPS("gps")
 gps.enable(TIME_STEP)
-
-camera = Camera("camera")
-camera.enable(TIME_STEP)
-
 emitter = Emitter("emitter")
+
+waypointCounter = 0
+waypoints = dict()
+
+image = cv2.imread("../../protos/textures/rover_circuit.jpg")
+#with open("../../pathCSV/waypoints.csv", "r") as f:
+	#reader = csv.DictReader(f)
+	#for row in reader:
+		#coordinateX = numpy.interp(row["coordinateX"], [0, image.shape[1] - 1], [params[""], params[""]])
+		#coordinateY = numpy.interp(row["coordinateY"], [0, image.shape[0] - 1], [params[""], params[""]])
+		#waypoints[row["waypointID"]] = ()
 
 teleoperaton = False #THIS VARIABLE IS ONLY FOR DEBUGGING PURPOSES AND USAGE OF THIS VARIABLE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
 
@@ -52,34 +59,12 @@ while (robot.step(timestep) != -1):
 			roverHelper.movement.brake(robot, MAX_WHEEL_VELOCITY)
 
 	gpsLocation = gps.getValues()
-	cameraData = camera.getImage()
-	image = numpy.frombuffer(cameraData, numpy.uint8).reshape((camera.getHeight(), camera.getWidth(), 4)) #BGRA
 
 	xRover, yRover = gps.getValues()[2], gps.getValues()[0]
 	emitter.send((str(xRover) + ", " + str(yRover)).encode('utf-8'))
 	
-	red = image[int(camera.getHeight()/2):camera.getHeight(), :, 2]
-	green = image[int(camera.getHeight()/2):camera.getHeight(), :, 1]
-	blue = image[int(camera.getHeight()/2):camera.getHeight(), :, 0]
-
-	hsvImage = cv2.cvtColor(numpy.dstack((blue, green, red)), cv2.COLOR_BGR2HSV)
-	lowerHSV = numpy.array([int(params["low_H"]), int(params["low_S"]), int(params["low_V"])])
-	upperHSV = numpy.array([int(params["high_H"]), int(params["high_S"]), int(params["high_V"])])
-
-	momentMask = cv2.inRange(hsvImage, lowerHSV, upperHSV)
-	moment = cv2.moments(momentMask, False)
-	
-	try:
-		cX = int(moment["m10"] / moment["m00"])
-		cY = int(moment["m01"] / moment["m00"])
-	except ZeroDivisionError:
-		cX, cY = int(camera.getHeight()/2), int(camera.getWidth()/2)
-
-	k = (2 * cX - camera.getWidth()) / camera.getWidth()
+	#print(xRover, yRover)
+	cX = 32
+	cameragetWidth = 64
+	k = (2 * cX - cameragetWidth) / cameragetWidth
 	roverHelper.lineFollow(robot, MAX_WHEEL_VELOCITY, k)
-
-	if teleoperaton == True:
-		cXdisplay, cYdisplay = int(cX), int(cY + camera.getHeight()/2)
-		cv2.circle(image, (cXdisplay, cYdisplay), int(params["display_dot_radius"]), (int(params["display_dot_R"]), int(params["display_dot_G"]), int(params["display_dot_B"])), int(params["display_dot_thickness"]))
-		cv2.imshow("centroid", image)
-		cv2.waitKey(TIME_STEP)
