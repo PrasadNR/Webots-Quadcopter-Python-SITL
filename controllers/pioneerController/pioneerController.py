@@ -66,13 +66,15 @@ while (robot.step(timestep) != -1):
 	
 	robotHeading = M_PI - numpy.arctan2(compassValues[0], compassValues[2])
 	waypointX, waypointY = waypoints[str(waypointCounter)][0], waypoints[str(waypointCounter)][1]
-	waypointHeading = numpy.arctan2(yRover - waypointY, waypointX - xRover)
+	waypointHeading = numpy.arctan2(waypointY - yRover, waypointX - xRover) + M_PI / 2.0
+	if waypointHeading < 0:
+		waypointHeading = waypointHeading + 2 * M_PI
 	
-	steering = (robotHeading - waypointHeading - M_PI) / M_PI
-	#steering = numpy.clip(steering, -1.0, 1.0)
-	#print(robotHeading, waypointHeading, steering, waypointCounter)
-	print(waypointCounter, waypointHeading)
-	roverHelper.lineFollow(robot, MAX_WHEEL_VELOCITY, steering)
+	steering = (robotHeading - waypointHeading) / M_PI
+	steering = numpy.clip(steering, -1.0, 1.0)
+
+	if numpy.isnan(steering) == False:
+		roverHelper.lineFollow(robot, MAX_WHEEL_VELOCITY, steering)
 
 	roverWaypointDistance = numpy.sqrt((xRover - waypointX) * (xRover - waypointX) + (yRover - waypointY) * (yRover - waypointY))
 	
