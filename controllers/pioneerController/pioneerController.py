@@ -26,16 +26,18 @@ emitter = Emitter("emitter")
 compass = Compass("compass")
 compass.enable(TIME_STEP)
 
-waypointCounter = 0
+waypointCounter = 1
 waypoints = dict()
 image = cv2.imread("../../protos/textures/rover_circuit.jpg")
-
+numberOfWaypoints = 0
 with open("../../pathCSV/waypoints.csv", "r") as f:
 	reader = csv.DictReader(f)
 	for row in reader:
 		coordinateX = numpy.interp(row["coordinateX"], [0, image.shape[1] - 1], [-float(params["floor_width"]) / 2, float(params["floor_width"]) / 2])
 		coordinateY = numpy.interp(row["coordinateY"], [0, image.shape[0] - 1], [-float(params["floor_height"]) / 2, float(params["floor_height"]) / 2])
 		waypoints[row["waypointID"]] = (coordinateX, coordinateY)
+		numberOfWaypoints += 1
+		#print(row["waypointID"], (coordinateX, coordinateY))
 
 teleoperaton = True #THIS VARIABLE IS ONLY FOR DEBUGGING PURPOSES AND USAGE OF THIS VARIABLE IN PRODUCTION IS HIGHLY DISCOURAGED. SET THIS TO False WHEN ROVER HAS TO BE AUTONOMOUS.
 
@@ -66,7 +68,6 @@ while (robot.step(timestep) != -1):
 	
 	robotHeading = M_PI - numpy.arctan2(compassValues[0], compassValues[2])
 	waypointX, waypointY = waypoints[str(waypointCounter)][0], waypoints[str(waypointCounter)][1]
-	print(waypointCounter)
 	waypointHeading = numpy.arctan2(yRover - waypointY, xRover - waypointX) + M_PI / 2.0
 	if waypointHeading < 0:
 		waypointHeading = waypointHeading + 2 * M_PI
@@ -74,10 +75,12 @@ while (robot.step(timestep) != -1):
 	steering = (robotHeading - waypointHeading) / M_PI
 	steering = numpy.clip(steering, -1.0, 1.0)
 
+	print(waypointHeading)
+
 	if numpy.isnan(steering) == False:
 		roverHelper.lineFollow(robot, MAX_WHEEL_VELOCITY, steering)
 
 	roverWaypointDistance = numpy.sqrt((xRover - waypointX) * (xRover - waypointX) + (yRover - waypointY) * (yRover - waypointY))
 	
 	if roverWaypointDistance < float(params["waypoint_reached_tolerance"]):
-		waypointCounter = waypointCounter + 1
+		waypointCounter = (waypointCounter + 1) % numberOfWaypoints
