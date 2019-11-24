@@ -66,7 +66,8 @@ while (robot.step(timestep) != -1):
 	
 	robotHeading = M_PI - numpy.arctan2(compassValues[0], compassValues[2])
 	waypointX, waypointY = waypoints[str(waypointCounter)][0], waypoints[str(waypointCounter)][1]
-	waypointHeading = numpy.arctan2(waypointY - yRover, waypointX - xRover) + M_PI / 2.0
+	print(waypointCounter)
+	waypointHeading = numpy.arctan2(yRover - waypointY, xRover - waypointX) + M_PI / 2.0
 	if waypointHeading < 0:
 		waypointHeading = waypointHeading + 2 * M_PI
 	

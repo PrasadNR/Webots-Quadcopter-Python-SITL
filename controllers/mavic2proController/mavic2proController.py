@@ -70,16 +70,14 @@ while (robot.step(timestep) != -1):
 
 	if zGPS > target_altitude * float(params["altitude_attainment_factor"]):
 		altitude_attained = True
+		#targetX = xRover
+		#targetY = yRover
 
 	if receiver.getQueueLength() > 0:
 		message = receiver.getData().decode('utf-8')
 		xRover, yRover = float(message.split(",")[0].strip()), float(message.split(",")[1].strip())
 		receiver.nextPacket()
 
-	if altitude_attained == True:
-		targetX = xRover
-		targetY = yRover
-		
 	if altitude_attained == False:
 		targetX = -1.0
 		targetY = -1.0
