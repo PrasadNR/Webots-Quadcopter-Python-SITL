@@ -1,8 +1,8 @@
 QUADCOPTER_TIME_STEP,8,ROVER_TIME_STEP,64
-TAKEOFF_THRESHOLD_VELOCITY,163,zWebotsFloorMin,-21
-k_vertical_thrust,68.5,zWebotsFloorMax,21
-k_roll_p,5,xWebotsFloorMin,-35
-k_pitch_p,10,xWebotsFloorMax,35
+TAKEOFF_THRESHOLD_VELOCITY,163,floor_width,70
+k_vertical_thrust,68.5,floor_height,42.4
+k_roll_p,5,waypoint_reached_tolerance,0.2
+k_pitch_p,10,,
 target_altitude,1.5,,
 pitch_Kp,2,,
 pitch_Ki,0,,

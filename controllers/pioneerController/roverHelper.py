@@ -1,3 +1,5 @@
+import numpy
+
 def getMotorAll(robot):
 	frontLeftMotor = robot.getMotor('front left wheel')
 	frontRightMotor = robot.getMotor('front right wheel')
