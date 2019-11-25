@@ -1,6 +1,6 @@
 # Webots-Quadcopter-Python-SITL
 
-_Note: This repository is under heavy development right now (and will likely be available by December 2019). I am creating a workaround for the critical bug I found in Webots. Link: https://github.com/cyberbotics/webots/issues/1081_
+_Note: This repository fundamentally uses Webots to simulate robots. I found a critical bug in Webots. Camera flickers and rover gets stuck repeatedly. I tried to find a workaround. Link: https://github.com/cyberbotics/webots/issues/1081 However, in Webots, the coordinates are inherently flipped (y-axis along the floor). Given the problems of camera not working, rover getting stuck and flipped coordinates, I could understand that the controller cannot be made production-ready. So, I have archived this repository. However, the flight controller is built on sound math. So, it should work in any SITL or Python-based hardware._
 
 ## Background
 
