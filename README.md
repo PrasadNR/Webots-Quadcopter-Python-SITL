@@ -41,3 +41,7 @@ Link: https://cyberbotics.com/doc/guide/using-python
 ## Running the simulator
 
 Just double click on (or run) _Webots-Quadcopter-Python-SITL/blob/master/worlds/ObjectTracking.wbt_
+
+## FAQs:
+
+[What is the intuition of the math of the aerodynamics?](https://github.com/PrasadNR/Webots-Quadcopter-Python-SITL/issues/3
