@@ -45,3 +45,4 @@ Just double click on (or run) _Webots-Quadcopter-Python-SITL/blob/master/worlds/
 ## FAQs:
 
 [What is the intuition of the math of the aerodynamics?](https://github.com/PrasadNR/Webots-Quadcopter-Python-SITL/issues/3)
+[Will there be other "cross-platform" simulator support/custom simulator support?](https://github.com/PrasadNR/Webots-Quadcopter-Python-SITL/issues/4)
